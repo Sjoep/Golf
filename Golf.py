@@ -259,7 +259,7 @@ with col_b:
 col_c, col_d = st.columns(2)
 
 with col_c:
-    st.subheader("Gemiddelde afstand per club")
+    st.subheader("Gemiddelde afstand per club (Klopt niet)")
 
     club_avg = (
         df.groupby("Club")["Totale Afst. Premium (m)"]
