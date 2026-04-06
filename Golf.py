@@ -14,7 +14,7 @@ import streamlit as st
 
 # ── Pagina-instellingen ───────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="Golf Driving Range TEST",
+    page_title="Golf Driving Range",
     page_icon="⛳",
     layout="wide",
 )
