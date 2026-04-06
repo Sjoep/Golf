@@ -19,7 +19,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("⛳ Golf Driving Range Dashboard")
+st.title("⛳ Golf Driving Range Dashboard V1")
 st.caption("Sessiedata aug 2023 – apr 2026 · Trackman/simulator export")
 
 # ── Data laden ────────────────────────────────────────────────────────────────
