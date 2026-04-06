@@ -14,13 +14,13 @@ import streamlit as st
 
 # ── Pagina-instellingen ───────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="Golf Driving Range TESSt",
+    page_title="Golf Driving Range Dashboard",
     page_icon="⛳",
     layout="wide",
 )
 
-st.title("⛳ Golf Driving Range Dashboard V1")
-st.caption("Sessiedata aug 2023 – apr 2026 · Trackman/simulator export")
+st.title("⛳ Golf Driving Range Dashboard")
+st.caption("Sessiedata 2023 - 2026 · Inrange/simulator export")
 
 # ── Data laden ────────────────────────────────────────────────────────────────
 SESSION_MAP = {
