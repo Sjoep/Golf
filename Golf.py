@@ -14,7 +14,7 @@ import streamlit as st
 
 # ── Pagina-instellingen ───────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="Golf Driving Range Dashboard",
+    page_title="Golf Driving Range Dashboardddd",
     page_icon="⛳",
     layout="wide",
 )
@@ -429,4 +429,3 @@ with st.expander("Bekijk ruwe data"):
         use_container_width=True,
         hide_index=True,
     )
-    
