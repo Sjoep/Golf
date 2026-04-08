@@ -14,7 +14,7 @@ import streamlit as st
 
 # ── Pagina-instellingen ───────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="Golf Driving Range Dashboardddd",
+    page_title="Golf Driving Range Dashboard",
     page_icon="⛳",
     layout="wide",
 )
