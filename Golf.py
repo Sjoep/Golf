@@ -289,6 +289,22 @@ with col_c:
     )
     st.plotly_chart(fig_bar, use_container_width=True)
 
+    st.subheader("Shot pattern (afstand vs bocht)")
+
+fig_disp = px.scatter(
+    df,
+    x="Bocht_num",
+    y="Totale Afst. Premium (m)",
+    opacity=0.6,
+    labels={
+        "Bocht_num": "Links (-) / Rechts (+)",
+        "Totale Afst. Premium (m)": "Afstand (m)",
+    },
+)
+
+fig_disp.update_layout(height=320, margin=dict(t=10, b=10))
+st.plotly_chart(fig_disp, use_container_width=True)
+
 with col_d:
     st.subheader("Balsnelheid vs. afstand")
 
