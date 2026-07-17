@@ -27,7 +27,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("⛳ Golf Driving Range Dashboardtdtdtdtdt")
+st.title("⛳ Golf Driving Range Dashboard")
 st.caption("Sessiedata 2023 - 2026 · Inrange/simulator export")
 
 # ── Data laden ────────────────────────────────────────────────────────────────
@@ -253,29 +253,8 @@ with col_b:
     st.plotly_chart(fig_bocht, use_container_width=True)
 
 # ── Rij 2: Shot pattern + Balsnelheid vs. afstand ────────────────────────────
-col_c, col_d = st.columns(2)
-
+col_c = st.columns(1)
 with col_c:
-    st.subheader("Shot pattern (afstand vs bocht)")
-
-    fig_disp = px.scatter(
-        df,
-        x="Bocht_num",
-        y="Totale Afst. Premium (m)",
-        opacity=0.6,
-        hover_data={"Sessie": True, "Slag #": True},
-        labels={
-            "Bocht_num": "Links (-) / Rechts (+)",
-            "Totale Afst. Premium (m)": "Afstand (m)",
-        },
-    )
-    fig_disp.update_layout(
-        margin=dict(t=10, b=10),
-        height=280,
-    )
-    st.plotly_chart(fig_disp, use_container_width=True)
-
-with col_d:
     st.subheader("Balsnelheid vs. afstand")
 
     fig_speed = px.scatter(
