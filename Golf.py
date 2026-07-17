@@ -150,6 +150,28 @@ if df.empty:
     st.warning("Geen data beschikbaar voor deze selectie.")
     st.stop()
 
+# ── Shot Quality Score ────────────────────────────────────────────────────────
+# Copy voorkomt een pandas SettingWithCopyWarning na het filteren
+df = df.copy()
+
+max_afstand = df["Totale Afst. Premium (m)"].max()
+
+if pd.notna(max_afstand) and max_afstand > 0:
+    df["Afstand_score"] = (
+        df["Totale Afst. Premium (m)"] / max_afstand * 100
+    )
+else:
+    df["Afstand_score"] = 0
+
+df["Richting_score"] = (
+    100 - df["Bocht_num"].abs() * 15
+).clip(lower=0, upper=100)
+
+df["Shot_score"] = (
+    0.6 * df["Afstand_score"]
+    + 0.4 * df["Richting_score"]
+).clip(lower=0, upper=100).round(1)
+
 # ── KPI-berekeningen ──────────────────────────────────────────────────────────
 avg_dist = df["Totale Afst. Premium (m)"].mean()
 avg_speed = df["Balsnelheid (km/u) Premium"].mean()
@@ -178,6 +200,12 @@ if len(sessie_progress) >= 2:
 else:
     progressie = 0
 
+avg_shot_score = df["Shot_score"].mean()
+best_shot_score = df["Shot_score"].max()
+
+best_quality_idx = df["Shot_score"].idxmax()
+best_quality_shot = df.loc[best_quality_idx]
+
 # ── KPI-kaarten ───────────────────────────────────────────────────────────────
 k1, k2, k3, k4 = st.columns(4)
 
@@ -194,6 +222,20 @@ k6.metric("Consistentie", f"{consistentie:.1f} m")
 k7.metric("Carry ratio", f"{carry_ratio:.1f}%")
 k8.metric("Progressie", f"{progressie:+.1f} m")
 
+
+# ── KPI-rij 3: Shot Quality ───────────────────────────────────────────────────
+q1, q2, q3, q4 = st.columns(4)
+
+q1.metric("Gem. shot score", f"{avg_shot_score:.1f}/100")
+q2.metric("Beste shot score", f"{best_shot_score:.1f}/100")
+q3.metric(
+    "Afstand beste kwaliteitsslag",
+    f"{best_quality_shot['Totale Afst. Premium (m)']:.0f} m",
+)
+q4.metric(
+    "Beste kwaliteitsslag",
+    f"Slag #{best_quality_shot['Slag #']}",
+)
 st.divider()
 
 # ── Rij 1: Afstand per slag + Bochtverdeling ─────────────────────────────────
@@ -395,6 +437,53 @@ fig_bocht_pct = px.pie(
 )
 fig_bocht_pct.update_layout(margin=dict(t=10, b=10), height=320)
 st.plotly_chart(fig_bocht_pct, use_container_width=True)
+
+
+# ── Shot Quality analyse ──────────────────────────────────────────────────────
+st.subheader("Shot Quality analyse")
+
+quality_cols = [
+    "Sessie",
+    "Slag #",
+    "Totale Afst. Premium (m)",
+    "Balsnelheid (km/u) Premium",
+    "Bocht_num",
+    "Afstand_score",
+    "Richting_score",
+    "Shot_score",
+]
+
+quality_cols = [col for col in quality_cols if col in df.columns]
+
+col_best, col_worst = st.columns(2)
+
+with col_best:
+    st.markdown("#### Beste 5 slagen")
+
+    beste_slagen = (
+        df.nlargest(5, "Shot_score")[quality_cols]
+        .reset_index(drop=True)
+    )
+
+    st.dataframe(
+        beste_slagen,
+        use_container_width=True,
+        hide_index=True,
+    )
+
+with col_worst:
+    st.markdown("#### Slechtste 5 slagen")
+
+    slechtste_slagen = (
+        df.nsmallest(5, "Shot_score")[quality_cols]
+        .reset_index(drop=True)
+    )
+
+    st.dataframe(
+        slechtste_slagen,
+        use_container_width=True,
+        hide_index=True,
+    )
 
 # ── Ruwe data tabel ───────────────────────────────────────────────────────────
 with st.expander("Bekijk ruwe data"):
