@@ -253,7 +253,7 @@ with col_b:
     st.plotly_chart(fig_bocht, use_container_width=True)
 
 # ── Rij 2: Shot pattern + Balsnelheid vs. afstand ────────────────────────────
-col_c = st.columns(1)
+col_c = st.columns(1)[0]
 with col_c:
     st.subheader("Balsnelheid vs. afstand")
 
