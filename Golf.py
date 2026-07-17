@@ -8,7 +8,15 @@ import glob
 import os
 
 import pandas as pd
-import plotly.express as px
+try:
+    import plotly.express as px
+except Exception:  # pragma: no cover - inform user to install package
+    px = None
+    if 'st' in globals():
+        st.error("Missing dependency: plotly. Install with `pip install plotly` and restart.")
+        st.stop()
+    else:
+        raise
 import plotly.graph_objects as go
 import streamlit as st
 
@@ -19,7 +27,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("⛳ Golf Driving Range Dashboard")
+st.title("⛳ Golf Driving Range Dashboardtdtdtdtdt")
 st.caption("Sessiedata 2023 - 2026 · Inrange/simulator export")
 
 # ── Data laden ────────────────────────────────────────────────────────────────
