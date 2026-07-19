@@ -2,6 +2,8 @@
 Golf Driving Range Dashboard
 Vereisten: pip install streamlit pandas plotly
 Gebruik:    streamlit run Golf.py
+
+Nieuwe sessies uploaden doe je via de "New Upload"-pagina in de sidebar-navigatie.
 """
 
 import glob
@@ -20,6 +22,8 @@ except Exception:  # pragma: no cover - inform user to install package
 import plotly.graph_objects as go
 import streamlit as st
 
+from golf_utils import parse_bocht, sessie_label_from_name
+
 # ── Pagina-instellingen ───────────────────────────────────────────────────────
 st.set_page_config(
     page_title="Golf Driving Range Dashboard",
@@ -30,54 +34,10 @@ st.set_page_config(
 st.title("⛳ Golf Driving Range Dashboard")
 st.caption("Sessiedata 2023 - 2026 · Inrange/simulator export")
 
-# ── Data laden ────────────────────────────────────────────────────────────────
-SESSION_MAP = {
-    "13_aug_2023.csv": "13 aug 2023",
-    "14_aug_2023.csv": "14 aug 2023",
-    "15_aug_2023.csv": "15 aug 2023",
-    "30_sept_2023.csv": "30 sept 2023",
-    "4_sept_2023.csv": "4 sept 2023",
-    "16_aug_2024.csv": "16 aug 2024",
-    "5_okt_2024.csv": "5 okt 2024",
-    "21_maart_2025.csv": "21 maart 2025",
-    "29_maart_2025.csv": "29 maart 2025",
-    "20_april_2025.csv": "20 april 2025",
-    "21_april_2025.csv": "21 april 2025",
-    "4_april_2026.csv": "4 april 2026",
-}
-
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def parse_bocht(val) -> int:
-    """Converteert '3L' → -3, '2R' → 2, '0' → 0."""
-    if pd.isna(val):
-        return 0
-    val = str(val).strip().upper()
-    if val in ("0", "-", ""):
-        return 0
-    if val.endswith("L"):
-        return -int(val[:-1])
-    if val.endswith("R"):
-        return int(val[:-1])
-    return 0
-
-
-def sessie_label_from_name(bestandsnaam: str) -> str:
-    """Geeft een mooie sessienaam terug als die in SESSION_MAP staat."""
-    return SESSION_MAP.get(bestandsnaam, bestandsnaam.replace(".csv", ""))
-
-
-# ── Upload nieuwe sessie ──────────────────────────────────────────────────────
-st.sidebar.subheader("Upload nieuwe sessie")
-
-uploaded_files = st.sidebar.file_uploader(
-    "Upload CSV bestand(en)",
-    type="csv",
-    accept_multiple_files=True,
-)
-
-
+# ── Data laden ────────────────────────────────────────────────────────────────
 @st.cache_data
 def load_data(folder: str = SCRIPT_DIR) -> pd.DataFrame:
     files = glob.glob(os.path.join(folder, "*.csv"))
@@ -105,30 +65,6 @@ def load_data(folder: str = SCRIPT_DIR) -> pd.DataFrame:
 
 df_all = load_data()
 
-# ── Verwerk uploads ───────────────────────────────────────────────────────────
-if uploaded_files:
-    upload_frames = []
-
-    for file in uploaded_files:
-        df_upload = pd.read_csv(file)
-        df_upload["Sessie"] = sessie_label_from_name(file.name)
-        upload_frames.append(df_upload)
-
-    df_upload_all = pd.concat(upload_frames, ignore_index=True)
-
-    if "Club" in df_upload_all.columns:
-        df_upload_all["Club"] = df_upload_all["Club"].replace("?", "Onbekend")
-
-    df_upload_all["Bocht_num"] = df_upload_all["Bocht"].apply(parse_bocht)
-
-    df_all = pd.concat([df_all, df_upload_all], ignore_index=True)
-
-    st.sidebar.success(f"{len(uploaded_files)} bestand(en) geladen!")
-
-if uploaded_files:
-    with st.expander("Preview upload"):
-        st.dataframe(df_upload_all.head(), use_container_width=True)
-
 # ── Sidebar filters ───────────────────────────────────────────────────────────
 with st.sidebar:
     st.header("Filters")
@@ -138,6 +74,7 @@ with st.sidebar:
 
     st.divider()
     st.caption("Tip: analyseer eerst alle sessies, en zoom daarna in op één sessie.")
+    st.caption("Nieuwe sessie uploaden? Ga naar de 'New Upload'-pagina in het menu hierboven.")
 
 # ── Data filteren ─────────────────────────────────────────────────────────────
 df = df_all.copy()
